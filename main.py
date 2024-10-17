@@ -18,6 +18,10 @@ for directory in directories_to_add:
     if directory not in sys.path:
         sys.path.append(directory)
 
+blender_scripts_path = bpy.utils.script_path_user() 
+if blender_scripts_path and blender_scripts_path not in sys.path:
+    sys.path.append(blender_scripts_path)
+
 blend_file_path = os.path.join(project_directory, "scene/.output.blend")
 
 # Import custom modules
@@ -34,12 +38,12 @@ from delete import delete, delete_all
 os.makedirs(project_directory, exist_ok=True)
 
 delete_all()
-# test0()
-# test1()
-# test2()
-# test3()
-# test4()
-# test5()
+test0()
+test1()
+test2()
+test3()
+test4()
+test5()
 test6()
 
 # Ensure the scene is updated
