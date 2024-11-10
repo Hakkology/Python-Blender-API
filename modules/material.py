@@ -1,5 +1,9 @@
 import bpy
+import math
 import random
+import bmesh
+from modules.selection import mode 
+from modules.sel import sel  
 
 def makeMaterial(name, diffuse=(1, 1, 1, 1), metallic=0.0, specular=0.8, roughness=0.2):
     """
@@ -41,15 +45,14 @@ def setSmooth(obj, level=None, smooth=True):
     for p in mesh.polygons:
         p.use_smooth = smooth
 
-
-def makeMaterialWithStripes(obj, stripe_count=12):
+def makeStripedMaterial(name, stripe_count=12):
     """
     Creates a material with stripes and assigns it to the given object.
-    :param obj: The object to which the material will be assigned.
+    :param name: The name of the material.
     :param stripe_count: The number of stripes around the sphere.
     """
     # Create a new material
-    mat = bpy.data.materials.new(name="StripedMaterial")
+    mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nodes = mat.node_tree.nodes
     links = mat.node_tree.links
@@ -60,56 +63,88 @@ def makeMaterialWithStripes(obj, stripe_count=12):
     # Create necessary nodes
     output_node = nodes.new(type='ShaderNodeOutputMaterial')
     principled_node = nodes.new(type='ShaderNodeBsdfPrincipled')
-    texture_coord_node = nodes.new(type='ShaderNodeTexCoord')
-    mapping_node = nodes.new(type='ShaderNodeMapping')
-    wave_node = nodes.new(type='ShaderNodeTexWave')
+    tex_coord_node = nodes.new(type='ShaderNodeTexCoord')
+    separate_xyz_node = nodes.new(type='ShaderNodeSeparateXYZ')
+    math_node = nodes.new(type='ShaderNodeMath')
     color_ramp_node = nodes.new(type='ShaderNodeValToRGB')
 
     # Set up the nodes
 
-    # Texture Coordinates -> Mapping
-    links.new(texture_coord_node.outputs['Object'], mapping_node.inputs['Vector'])
+    # Texture Coordinates -> Separate XYZ
+    links.new(tex_coord_node.outputs['Generated'], separate_xyz_node.inputs['Vector'])
 
-    # Mapping -> Wave Texture
-    links.new(mapping_node.outputs['Vector'], wave_node.inputs['Vector'])
+    # Separate XYZ Z -> Math Node (Modulo)
+    links.new(separate_xyz_node.outputs['Z'], math_node.inputs[0])
 
-    # Wave Texture -> Color Ramp
-    links.new(wave_node.outputs['Color'], color_ramp_node.inputs['Fac'])
+    # Set Math Node to modulo operation to create angular divisions
+    math_node.operation = 'MODULO'
+    math_node.inputs[1].default_value = 2 * 3.14159265 / stripe_count  # Divide circle into equal parts
 
-    # Color Ramp -> Principled BSDF
+    # Math Node -> Color Ramp
+    links.new(math_node.outputs['Value'], color_ramp_node.inputs['Fac'])
+
+    # Color Ramp -> Principled BSDF Base Color
     links.new(color_ramp_node.outputs['Color'], principled_node.inputs['Base Color'])
 
     # Principled BSDF -> Material Output
     links.new(principled_node.outputs['BSDF'], output_node.inputs['Surface'])
 
-    # Set Wave Texture settings
-    wave_node.wave_type = 'BANDS'
-    wave_node.bands_direction = 'Z'  # Stripes around Z-axis
-
-    # Correctly set the scale input
-    wave_node.inputs['Scale'].default_value = stripe_count / 2  # Adjust scale to match stripe count
-
-    # Adjust mapping node if needed
-    mapping_node.inputs['Rotation'].default_value[2] = 0  # Rotate if needed
-
     # Set up the color ramp with the required number of stripes
     color_ramp = color_ramp_node.color_ramp
     color_ramp.interpolation = 'CONSTANT'
 
-    # Clear existing elements
-    # color_ramp.elements.clear()
+    # Adjust existing elements
+    color_ramp.elements[0].position = 0.0
+    color_ramp.elements[0].color = (random.random(), random.random(), random.random(), 1)
 
-    # Add stripe colors
-    for i in range(stripe_count + 1):  # +1 because we need n+1 elements for n stripes
+    color_ramp.elements[1].position = 1.0
+    color_ramp.elements[1].color = (random.random(), random.random(), random.random(), 1)
+
+    # Remove extra elements if any (usually there are only 2 initially)
+    while len(color_ramp.elements) > 2:
+        color_ramp.elements.remove(color_ramp.elements[-1])
+
+    # Add additional elements
+    for i in range(1, stripe_count):
         position = i / stripe_count
         element = color_ramp.elements.new(position)
-        # Assign a random color
         element.color = (random.random(), random.random(), random.random(), 1)
 
-    # Assign the material to the object
-    if obj.data.materials:
-        # Assign to first material slot
-        obj.data.materials[0] = mat
-    else:
-        # No material assigned yet
-        obj.data.materials.append(mat)
+    return mat
+
+
+def assignMaterialsToSphere(sphere_obj, stripe_count):
+    # Ensure the sphere has a mesh
+    if sphere_obj.type != 'MESH':
+        return
+
+    # Create materials
+    materials = []
+    for i in range(stripe_count):
+        mat = bpy.data.materials.new(name=f"StripeMaterial_{i}")
+        mat.diffuse_color = (random.random(), random.random(), random.random(), 1)
+        materials.append(mat)
+        sphere_obj.data.materials.append(mat)
+
+    sel.select_object()
+    mode('EDIT')  # Switch to edit mode
+
+    # Initialize bmesh for edit mode operations
+    bm = bmesh.from_edit_mesh(sphere_obj.data)
+
+    # Assign materials based on face normal's angle
+    for face in bm.faces:
+        # Calculate the angle of the face normal in spherical coordinates
+        normal = face.normal.normalized()
+        theta = math.atan2(normal.y, normal.x)  # Azimuthal angle
+
+        # Map angle to stripe index
+        index = int((theta + math.pi) / (2 * math.pi) * stripe_count) % stripe_count
+
+        # Assign material index to the face
+        face.material_index = index
+        face.select = True  # Optional: Select the face to visualize it in edit mode
+
+    # Update mesh and return to object mode
+    bmesh.update_edit_mesh(sphere_obj.data)
+    mode('OBJECT')  # Switch back to object mode

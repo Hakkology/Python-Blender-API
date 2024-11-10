@@ -3,10 +3,13 @@ import bmesh
 
 def select(objName):
     """
-    Selects an object by its name.
+    Selects an object by its name, sets it as the active object, and returns it.
     """
     bpy.ops.object.select_all(action='DESELECT')
-    bpy.data.objects[objName].select_set(True)
+    obj = bpy.data.objects[objName]
+    obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    return obj
 
 def activate(objName):
     """
