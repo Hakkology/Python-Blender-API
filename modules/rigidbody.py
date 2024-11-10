@@ -30,3 +30,4 @@ def add_rigidbody(obj, body_type='ACTIVE'):
     
     # Set rigid body type
     obj.rigid_body.type = body_type
+    obj.rigid_body.restitution = 0.9
