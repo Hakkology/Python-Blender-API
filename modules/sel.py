@@ -42,3 +42,4 @@ class sel:
     def rotate_z(v):
         obj = bpy.context.active_object
         obj.rotation_euler.z += v
+
