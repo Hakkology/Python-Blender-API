@@ -34,7 +34,7 @@ from test3 import test3
 from test4 import test4
 from test5 import test5
 from test6 import test6
-from test7 import test7
+from homework1 import test7
 from delete import delete_all
 from render import render_to_folder, bake_simulation_cache_to_disk
 
@@ -54,7 +54,7 @@ test7()
 # Render if render_mode is True
 if render_mode:
     bake_simulation_cache_to_disk(frame_start=1, frame_end=120)
-    render_to_folder(render_name='test7_render', res_x=1024, res_y=1024, engine='BLENDER_EEVEE', animation=True)
+    render_to_folder(render_name='BCO602_HW1', res_x=1024, res_y=1024, engine='BLENDER_EEVEE', animation=True)
 
 # Ensure the scene is updated
 bpy.context.view_layer.update()

@@ -14,31 +14,35 @@ def setup_rigidbody_world():
 
     bpy.context.scene.gravity = (0, 0, -9.81)  
 
-    # Küre oluştur ve pasif bir RigidBody olarak ayarla
+def create_partial_spherical_ground():
+    """
+    Creates a partial spherical ground plane as a rigid body.
+    """
     bpy.ops.mesh.primitive_uv_sphere_add(radius=6, location=(0, 0, 0))
-    sphere = bpy.context.object  
+    sphere = bpy.context.object
     
     # Küreyi seç ve düzenleme moduna geç
     select(sphere.name)
     mode('EDIT')
-    selection_mode('VERT')  # Liste değil, doğrudan string olarak VERT veriliyor
+    selection_mode('VERT')
 
     # Alt kısmı seç ve sil
     bm = bmesh.from_edit_mesh(bpy.context.object.data)
     for vert in bm.verts:
-        if vert.co.z > 1:  
+        if vert.co.z > 1:
             vert.select = True
     bmesh.update_edit_mesh(bpy.context.object.data)
     
-    bpy.ops.mesh.delete(type='VERT')  
-    mode('OBJECT') 
-    sel.scale((1.5, 1.5, 1))
+    # Seçilen vertexleri sil ve yatay ölçek uygula
+    bpy.ops.mesh.delete(type='VERT')
+    mode('OBJECT')
+    sel.scale((1.5, 1.5, 1))  
 
-    # Rigidbody eklemeleri
+    # Rigidbody ayarları
     bpy.ops.rigidbody.object_add()
-    bpy.context.object.rigid_body.type = 'PASSIVE'
-    bpy.context.object.rigid_body.collision_shape = 'MESH'
-    bpy.context.object.rigid_body.mesh_source = 'BASE'
+    sphere.rigid_body.type = 'PASSIVE'
+    sphere.rigid_body.collision_shape = 'MESH'
+    sphere.rigid_body.mesh_source = 'BASE'
 
 def add_rigidbody(obj, body_type='ACTIVE'):
     """
