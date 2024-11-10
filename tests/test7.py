@@ -21,7 +21,7 @@ def test7():
     create_directional_light(location=(0, 0, 10), rotation=(math.radians(45), math.radians(45), math.radians(45)), energy=1, color=(1, 1, 1))
     
     # Create 80 spheres with random scale, rigidbody, and striped material
-    for i in range(50):
+    for i in range(150):
         sphere_name = f"Sphere_{i}"
         
         # Create sphere

@@ -123,21 +123,26 @@ def assignMaterialsToSphere(sphere_obj, stripe_count):
         materials.append(mat)
         sphere_obj.data.materials.append(mat)
 
-    sel.select_object()
-    mode('EDIT')  # Switch to edit mode
+    # Set to edit mode
+    bpy.context.view_layer.objects.active = sphere_obj
+    bpy.ops.object.mode_set(mode='EDIT')
 
     # Initialize bmesh for edit mode operations
     bm = bmesh.from_edit_mesh(sphere_obj.data)
     for face in bm.faces:
         # Calculate the angle of the face normal in spherical coordinates
         normal = face.normal.normalized()
-        theta = math.atan2(normal.y, normal.x)  # Azimuthal angle
+        theta = math.atan2(normal.y, normal.x)  
+        phi = math.acos(normal.z)  
+
+        # Skip painting the top and bottom
+        if phi < 0.2 or phi > (math.pi - 0.2):
+            continue  
 
         # Map angle to stripe index
         index = int((theta + math.pi) / (2 * math.pi) * stripe_count) % stripe_count
-
         face.material_index = index
-        face.select = True  
 
+    # Update and return to object mode
     bmesh.update_edit_mesh(sphere_obj.data)
-    mode('OBJECT')  
+    bpy.ops.object.mode_set(mode='OBJECT')
