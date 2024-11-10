@@ -35,9 +35,9 @@ def test7():
         random_location = (random.uniform(-5, 5), random.uniform(-5, 5), random.uniform(1, 10))
         act.location(random_location)
         
-
         assignMaterialsToSphere(obj, stripe_count=10)
 
+        # Testing node functionality, works well. Disabled and archived for future use.
         # # Create material with stripes
         # mat = makeStripedMaterial(f"StripedMaterial_{i}", stripe_count=6)
         

@@ -45,6 +45,7 @@ def setSmooth(obj, level=None, smooth=True):
     for p in mesh.polygons:
         p.use_smooth = smooth
 
+# GPT TEST, ADDING NODES, INVALID.
 def makeStripedMaterial(name, stripe_count=12):
     """
     Creates a material with stripes and assigns it to the given object.
@@ -114,10 +115,6 @@ def makeStripedMaterial(name, stripe_count=12):
 
 
 def assignMaterialsToSphere(sphere_obj, stripe_count):
-    # Ensure the sphere has a mesh
-    if sphere_obj.type != 'MESH':
-        return
-
     # Create materials
     materials = []
     for i in range(stripe_count):
@@ -131,8 +128,6 @@ def assignMaterialsToSphere(sphere_obj, stripe_count):
 
     # Initialize bmesh for edit mode operations
     bm = bmesh.from_edit_mesh(sphere_obj.data)
-
-    # Assign materials based on face normal's angle
     for face in bm.faces:
         # Calculate the angle of the face normal in spherical coordinates
         normal = face.normal.normalized()
@@ -141,10 +136,8 @@ def assignMaterialsToSphere(sphere_obj, stripe_count):
         # Map angle to stripe index
         index = int((theta + math.pi) / (2 * math.pi) * stripe_count) % stripe_count
 
-        # Assign material index to the face
         face.material_index = index
-        face.select = True  # Optional: Select the face to visualize it in edit mode
+        face.select = True  
 
-    # Update mesh and return to object mode
     bmesh.update_edit_mesh(sphere_obj.data)
-    mode('OBJECT')  # Switch back to object mode
+    mode('OBJECT')  
