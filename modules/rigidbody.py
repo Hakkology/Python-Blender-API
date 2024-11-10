@@ -8,7 +8,7 @@ def setup_rigidbody_world():
     """
     Sets up a rigid body world with gravity and adds a partial spherical ground plane.
     """
-    # RigidBody World ekle
+    # RigidBody World add
     if not bpy.context.scene.rigidbody_world:
         bpy.ops.rigidbody.world_add()
 
@@ -21,24 +21,23 @@ def create_partial_spherical_ground():
     bpy.ops.mesh.primitive_uv_sphere_add(radius=6, location=(0, 0, 0))
     sphere = bpy.context.object
     
-    # Küreyi seç ve düzenleme moduna geç
+    # Select the sphere and edit
     select(sphere.name)
     mode('EDIT')
     selection_mode('VERT')
 
-    # Alt kısmı seç ve sil
+    # Remove below portion
     bm = bmesh.from_edit_mesh(bpy.context.object.data)
     for vert in bm.verts:
         if vert.co.z > 1:
             vert.select = True
     bmesh.update_edit_mesh(bpy.context.object.data)
     
-    # Seçilen vertexleri sil ve yatay ölçek uygula
     bpy.ops.mesh.delete(type='VERT')
     mode('OBJECT')
     sel.scale((1.5, 1.5, 1))  
 
-    # Rigidbody ayarları
+    # Rigidbody settings
     bpy.ops.rigidbody.object_add()
     sphere.rigid_body.type = 'PASSIVE'
     sphere.rigid_body.collision_shape = 'MESH'
