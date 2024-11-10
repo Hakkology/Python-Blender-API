@@ -1,7 +1,7 @@
 import bpy
 import os
 
-def bake_simulation_cache_to_disk(frame_start=1, frame_end=250):
+def bake_simulation_cache_to_disk(frame_start=1, frame_end=120):
     """
     Enables cache to disk for rigid body simulations to bake the simulation without keyframes.
     :param frame_start: Starting frame of the simulation.

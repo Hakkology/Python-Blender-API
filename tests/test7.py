@@ -3,25 +3,26 @@ import random
 import math
 from modules.create import create
 from modules.act import act
-from modules.selection import select
-from modules.delete import delete_all
+from modules.selection import select, mode
 from modules.rigidbody import setup_rigidbody_world, add_rigidbody
-from modules.material import makeStripedMaterial, setMaterial, assignMaterialsToSphere  
+from modules.material import assignMaterialsToSphere  
+from modules.camera import add_camera  
 from modules.light import create_point_light, create_directional_light
 
 def test7():
-    # Delete all existing objects
-    delete_all()
-    
     # Set up the RigidBody world
     setup_rigidbody_world()
+
+    # Add a camera if none exists
+    if not bpy.context.scene.camera:
+        add_camera()
 
     # Add a point light at the center above the scene
     create_point_light(location=(0, 0, 10), energy=1000, color=(1, 1, 1))
     create_directional_light(location=(0, 0, 10), rotation=(math.radians(45), math.radians(45), math.radians(45)), energy=1, color=(1, 1, 1))
     
     # Create 80 spheres with random scale, rigidbody, and striped material
-    for i in range(150):
+    for i in range(400):
         sphere_name = f"Sphere_{i}"
         
         # Create sphere
