@@ -32,19 +32,21 @@ from test3 import test3
 from test4 import test4
 from test5 import test5
 from test6 import test6
+from test7 import test7
 from delete import delete, delete_all
 
 # Ensure the directory exists
 os.makedirs(project_directory, exist_ok=True)
 
 delete_all()
-test0()
-test1()
-test2()
-test3()
-test4()
-test5()
-test6()
+# test0()
+# test1()
+# test2()
+# test3()
+# test4()
+# test5()
+# test6()
+test7();
 
 # Ensure the scene is updated
 bpy.context.view_layer.update()
