@@ -9,7 +9,7 @@ from modules.material import assignMaterialsToSphere
 from modules.camera import add_camera  
 from modules.light import create_point_light, create_directional_light
 
-def test7():
+def homework1():
     # Set up the RigidBody world
     setup_rigidbody_world()
     # Create partial spherical ground plane
