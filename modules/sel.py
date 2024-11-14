@@ -43,3 +43,17 @@ class sel:
         obj = bpy.context.active_object
         obj.rotation_euler.z += v
 
+    @staticmethod
+    def subdivide(cuts=4, smoothness=0):
+        """
+        Subdivides the active object in edit mode.
+        :param cuts: Number of cuts for subdivision.
+        :param smoothness: Smoothness of the subdivisions.
+        """
+        obj = bpy.context.active_object
+        if obj and obj.type == 'MESH':
+            bpy.ops.object.mode_set(mode='EDIT')
+            bpy.ops.mesh.subdivide(number_cuts=cuts, smoothness=smoothness)
+            bpy.ops.object.mode_set(mode='OBJECT')  # Return to object mode after subdividing
+
+

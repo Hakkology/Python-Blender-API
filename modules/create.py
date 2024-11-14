@@ -15,3 +15,8 @@ class create:
     def cone(objName):
         bpy.ops.mesh.primitive_cone_add(radius1=0.5, location=(0, 0, 0))
         act.rename(objName)
+
+    def subdividedcube(objName, cuts=4, smoothness=0):
+        bpy.ops.mesh.primitive_cube_add(size=0.5, location=(0, 0, 0))
+        act.subdivide(cuts=cuts, smoothness=smoothness)
+        act.rename(objName)
