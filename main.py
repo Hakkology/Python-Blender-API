@@ -48,7 +48,7 @@ delete_all()
 # test3()
 # test4()
 # test5()
-# test6()
+test6()
 homework1()
 
 # Render if render_mode is True

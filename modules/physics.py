@@ -56,3 +56,26 @@ def add_rigidbody(obj, body_type='ACTIVE'):
     # Set rigid body type
     obj.rigid_body.type = body_type
     obj.rigid_body.restitution = 0.9  # Bounciness ayarı
+
+def add_softbody(obj, body_type):
+    """
+    Adss a softbody to specified object.
+    """
+    # Add a Cube
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, 2))
+    # Subdivide the Mesh for softbody calculations
+    bpy.ops.object.mode_set(mode = 'EDIT')
+    bpy.ops.mesh.subdivide(number_cuts = 4, smoothness = 0)
+    # Modifify the cube as a SoftBody
+    bpy.ops.object.mode_set(mode='OBJECT')
+    bpy.ops.object.modifier_add(type='SOFT_BODY')
+    bpy.context.object.modifiers["Softbody"].settings.friction = 2
+    bpy.context.object.modifiers["Softbody"].settings.use_goal = False
+    bpy.context.object.modifiers["Softbody"].settings.use_self_collision = True
+    bpy.context.object.modifiers["Softbody"].settings.use_stiff_quads = False
+    bpy.context.object.modifiers["Softbody"].settings.pull = 0.5
+    bpy.context.object.modifiers["Softbody"].settings.push = 0.5
+    bpy.context.object.modifiers["Softbody"].settings.damping = 0.5
+    bpy.context.object.modifiers["Softbody"].settings.shear = 0.4
+    bpy.context.object.modifiers["Softbody"].settings.bend = 0.4
+    bpy.ops.object.modifier_add(type='COLLISION')

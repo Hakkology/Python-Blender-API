@@ -4,7 +4,7 @@ import math
 from modules.create import create
 from modules.act import act
 from modules.selection import select, mode
-from modules.rigidbody import setup_rigidbody_world, add_rigidbody, create_partial_spherical_ground
+from modules.physics import setup_rigidbody_world, add_rigidbody, create_partial_spherical_ground
 from modules.material import assignMaterialsToSphere  
 from modules.camera import add_camera  
 from modules.light import create_point_light, create_directional_light
