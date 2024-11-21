@@ -10,7 +10,7 @@ from modules.camera import add_camera
 from modules.light import create_point_light, create_directional_light
 
 def homework2():
-    # Set up the RigidBody world
+
     setup_rigidbody_world()
     # Create partial spherical ground plane
     create_partial_spherical_ground()
@@ -18,16 +18,20 @@ def homework2():
     if not bpy.context.scene.camera:
         add_camera()
 
-    softbody_settings = {
+    sphere_softbody_settings = {
         "friction": 0.2,
         "use_goal": False,
         "use_self_collision": True,
         "use_stiff_quads": True,
-        "pull": 0.6,
-        "push": 0.6,
-        "damping": 0.5,
-        "shear": 0.4,
-        "bend": 0.3,
+        "pull": 0.9,
+        "push": 0.9,
+        "damping": 0.1,  # Damping değerini 0.0 yaptık
+        "shear": 1.0,
+        "bend": 5.0,
+        "mass": 2.0,  # Mass değerini artırdık
+        "gravity": 1.0,
+        "ball_size": 0.1,
+        "ball_stiff": 1.0,
     }
 
     # Add a point light at the center above the scene
@@ -45,14 +49,14 @@ def homework2():
         obj = select(sphere_name)
         
         # Add Softbody
-        add_softbody_modifier(obj, softbody_settings)
+        add_softbody_modifier(obj, sphere_softbody_settings)
         
         # Set random scale
-        random_scale = random.uniform(0.2, 1.2)
+        random_scale = random.uniform(1, 1.75)
         act.scale((random_scale, random_scale, random_scale))
         
         # Set random position
-        random_location = (random.uniform(-8, 8), random.uniform(-5, 5), random.uniform(1, 10))
+        random_location = (random.uniform(-3, 3), random.uniform(-3, 3), random.uniform(1, 10))
         act.location(random_location)
         
         assignMaterialsToSphere(obj, stripe_count=10)
