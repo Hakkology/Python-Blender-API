@@ -9,15 +9,12 @@ def setup_rigidbody_world():
     Sets up a rigid body world with gravity and adds a partial spherical ground plane.
     """
     # RigidBody World add
-    # if not bpy.context.scene.rigidbody_world:
-    #     bpy.ops.rigidbody.world_add()
+    if not bpy.context.scene.rigidbody_world:
+        bpy.ops.rigidbody.world_add()
 
     bpy.context.scene.gravity = (0, 0, -9.81)  
 
 def create_partial_spherical_ground():
-    """
-    Creates a partial spherical ground plane as a rigid body.
-    """
     bpy.ops.mesh.primitive_uv_sphere_add(radius=6, location=(0, 0, 0))
     sphere = bpy.context.object
     
@@ -26,7 +23,7 @@ def create_partial_spherical_ground():
     mode('EDIT')
     selection_mode('VERT')
 
-    # Remove below portion
+    # Remove above portion
     bm = bmesh.from_edit_mesh(bpy.context.object.data)
     for vert in bm.verts:
         if vert.co.z > 1:
@@ -35,10 +32,26 @@ def create_partial_spherical_ground():
     
     bpy.ops.mesh.delete(type='VERT')
     mode('OBJECT')
-    sel.scale((0.75, 0.75, 1))  
+    sel.scale((0.75, 0.75, 1))
 
+    # Collision ayarları
     bpy.context.view_layer.objects.active = sphere
     bpy.ops.object.modifier_add(type='COLLISION')
+    sphere.collision.damping = 0.6
+    sphere.collision.use_culling = False
+    sphere.collision.thickness_outer = 0.2
+    sphere.collision.thickness_inner = 0.2
+
+    # Passive rigidbody ekle
+    bpy.ops.rigidbody.object_add()
+    sphere.rigid_body.type = 'PASSIVE'
+    sphere.rigid_body.collision_shape = 'MESH'
+    sphere.rigid_body.friction = 0.8
+    sphere.rigid_body.restitution = 0.5
+    sphere.rigid_body.use_margin = True
+    sphere.rigid_body.collision_margin = 0.2
+
+    return sphere
 
 def add_rigidbody(obj, body_type='ACTIVE'):
     """
@@ -54,46 +67,42 @@ def add_rigidbody(obj, body_type='ACTIVE'):
     obj.rigid_body.type = body_type
     obj.rigid_body.restitution = 0.9  # Bounciness ayarı
 
-def add_softbody_modifier(obj, settings=None):
+def add_softbody_modifier(obj):
     bpy.context.view_layer.objects.active = obj
     if "Softbody" not in [m.name for m in obj.modifiers]:
-        bpy.ops.object.mode_set(mode='OBJECT')
         bpy.ops.object.modifier_add(type='SOFT_BODY')
 
+    # Önce collision ekleyelim
+    bpy.ops.object.modifier_add(type='COLLISION')
+    obj.collision.damping = 0.8
+    obj.collision.use_culling = False
+    obj.collision.thickness_outer = 0.02
+    obj.collision.thickness_inner = 0.02
+
     softbody = obj.modifiers["Softbody"]
-
-    if settings is None:
-        settings = {
-            "friction": 0.5,          # Sürtünmeyi düşürdük
-            "use_goal": False,
-            "use_self_collision": True,
-            "use_stiff_quads": True,
-            "pull": 0.9,
-            "push": 0.9,
-            "damping": 0.1,           # Damping değerini 0.0 yaptık
-            "shear": 1.0,
-            "bend": 1.0,
-            "mass": 2.0,              # Kütleyi artırdık
-            "gravity": 1.0,
-            "ball_size": 1.8,
-            "ball_stiff": 1.0,
-        }
-
-    softbody.settings.friction = settings["friction"]
-    softbody.settings.mass = settings["mass"]
-    softbody.settings.use_goal = settings["use_goal"]
-    softbody.settings.use_self_collision = settings["use_self_collision"]
-    softbody.settings.use_stiff_quads = settings["use_stiff_quads"]
-    softbody.settings.pull = settings["pull"]
-    softbody.settings.push = settings["push"]
-    softbody.settings.damping = settings["damping"]
-    softbody.settings.shear = settings["shear"]
-    softbody.settings.bend = settings["bend"]
-    softbody.settings.gravity = settings["gravity"]
-    softbody.settings.ball_size = settings["ball_size"]
-    softbody.settings.ball_stiff = settings["ball_stiff"]
-
+    
+    softbody.settings.pull = 0.9
+    softbody.settings.push = 0.9
+    softbody.settings.damping = 0.05
+    softbody.settings.plastic = 1  # Integer değer olarak düzeltildi
+    
+    # Self collision ayarları
+    softbody.settings.use_self_collision = True
+    softbody.settings.collision_collection = bpy.context.scene.collection
+    softbody.settings.ball_size = 0.5
+    softbody.settings.ball_stiff = 0.95
+    
+    # Collision ayarları
+    softbody.settings.use_edges = True
+    softbody.settings.use_face_collision = True
+    softbody.settings.collision_type = 'MANUAL'
+    
     # Solver ayarları
-    softbody.settings.step_min = 10
+    softbody.settings.step_min = 5
     softbody.settings.step_max = 50
     softbody.settings.error_threshold = 0.01
+    softbody.settings.use_estimate_matrix = True
+    
+    # Cache ayarları
+    softbody.point_cache.frame_start = 1
+    softbody.point_cache.frame_end = 120
