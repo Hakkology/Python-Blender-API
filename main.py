@@ -36,6 +36,7 @@ from test5 import test5
 from test6 import test6
 from homework1 import homework1
 from homework2 import homework2
+from homework3 import homework3
 from delete import delete_all
 from render import render_to_folder, bake_simulation_cache_to_disk
 
@@ -51,7 +52,8 @@ delete_all()
 # test5()
 # test6()
 # homework1()
-homework2()
+# homework2()
+homework3()
 
 
 # Render if render_mode is True
