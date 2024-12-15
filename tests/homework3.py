@@ -6,28 +6,35 @@ from modules.act import act
 from modules.sel import sel
 from modules.selection import select
 from modules.det import add_bevel
+from modules.light import create_directional_light
 
 def lerp(start, end, factor):
     """Lerp function"""
-    return start + factor * (end - start)
+    return start + factor * (end - start) # basic lerp function
 
 def create_pastel_color():
     """Mix colour with white"""
     base_color = [random.random() for _ in range(3)]
     white = [1, 1, 1]
-    mix_factor = 0.6  # Adjust this value to control pastel intensity (0.5 = 50% white)
+    mix_factor = 0.6  # for pastel colouring
     
     pastel = [lerp(base, 1, mix_factor) for base in base_color]
-    return (*pastel, 1)  # Return with alpha = 1
+    return (*pastel, 1)  
 
 
 def homework3():
-    # Küpleri saklamak için liste
     cubes = []
-    # Her küp için başlangıç ve hareket aralığı bilgilerini saklayacağız
     cube_data = {}
 
-    # Create 20x20 grid of cubes
+    # lights
+    create_directional_light(
+        location=(0, 0, 10),
+        rotation=(math.radians(45), math.radians(45), math.radians(270)),
+        energy=1000,
+        color=(1, 1, 1)
+    )
+
+    # 20x20 grid of cubes
     for x in range(20):
         for y in range(20):
             cube_name = f'AnimatedCube_{x}_{y}'
@@ -36,12 +43,14 @@ def homework3():
             cube = select(cube_name)
             add_bevel(cube)
             
+            # random height
             initial_z = random.uniform(0, 0.5)
             movement_range = random.uniform(0.25, 0.5)
             sel.translate((x * 1.1, y * 1.1, initial_z))
             
             act.scale((2, 2, 2))
             
+            # random colour
             mat = bpy.data.materials.new(name=f"Color_{x}_{y}")
             mat.diffuse_color = create_pastel_color()
             
@@ -51,6 +60,7 @@ def homework3():
             else:
                 cube.data.materials.append(mat)
             
+            # add to list
             cubes.append(cube)
             cube_data[cube] = {
                 'initial_z': initial_z,
@@ -64,12 +74,12 @@ def homework3():
         
         for cube in cubes:
             data = cube_data[cube]
-            # Her frame'de sürekli hareket için sinüs dalgası kullan
+            # sin wave for movement
             cube.location.z = data['initial_z'] + (data['movement_range'] * 
-                math.sin((frame / 10) + data['phase_offset']))  # 10 frame'de bir döngü
+                math.sin((frame / 10) + data['phase_offset']))  # 10 frames per cycle
             cube.keyframe_insert(data_path="location", frame=frame)
             
-            # Add smooth interpolation
+            # smooth interpolation
             if cube.animation_data and cube.animation_data.action:
                 for fcurve in cube.animation_data.action.fcurves:
                     for keyframe in fcurve.keyframe_points:
