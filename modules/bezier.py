@@ -1,18 +1,14 @@
 import bpy
-import math
-from mathutils import Vector
 
 class BezierCurve:
     def __init__(self, name="BezierCurve"):
-        # Create the curve data
+        # curve data -- make modules later
         self.curve_data = bpy.data.curves.new(name=name, type='CURVE')
         self.curve_data.dimensions = '3D'
         
         # Create the object
         self.curve_object = bpy.data.objects.new(name, self.curve_data)
         bpy.context.scene.collection.objects.link(self.curve_object)
-        
-        # Create the spline
         self.spline = self.curve_data.splines.new('BEZIER')
         
     def set_control_points(self, points):

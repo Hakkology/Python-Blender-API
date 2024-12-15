@@ -1,5 +1,6 @@
 import bpy
 
+# add bevel
 def add_bevel(obj, width=0.02, segments=3):
     """Add bevel modifier to object with given parameters"""
     bevel = obj.modifiers.new(name="Bevel", type='BEVEL')

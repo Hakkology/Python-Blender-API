@@ -17,11 +17,10 @@ def lerp(start, end, factor):
     """Lerp function"""
     return start + factor * (end - start) # basic lerp function
 
-def create_pastel_color():
+def create_pastel_color(mix_factor):
     """Mix colour with white"""
     base_color = [random.random() for _ in range(3)]
     white = [1, 1, 1]
-    mix_factor = 0.6  # for pastel colouring
     
     pastel = [lerp(base, 1, mix_factor) for base in base_color]
     return (*pastel, 1)  
@@ -35,27 +34,26 @@ def homework3():
     grid_width = grid_size * spacing
     grid_center_x = (grid_width - spacing) / 2
     grid_center_y = (grid_width - spacing) / 2
-    grid_center_z = 0  # or you can set this to average height if needed
 
     # lights section
     create_directional_light(
         location=(0, 0, 10),
         rotation=(math.radians(45), math.radians(45), math.radians(270)),
-        energy=1000,
+        energy=1,
         color=(1, 1, 1)
     )
 
     # camera section
     camera_path = BezierCurve("CameraPath")
-    # Define control points
+    # control points
     radius = 15  
     control_points = [
-        (grid_center_x + radius, grid_center_y, 6),
-        (grid_center_x + radius, grid_center_y + radius, 6),
-        (grid_center_x - radius, grid_center_y + radius, 4),
-        (grid_center_x - radius, grid_center_y - radius, 4),
-        (grid_center_x + radius, grid_center_y - radius, 6),
-        (grid_center_x + radius, grid_center_y, 6)
+        (grid_center_x + radius, grid_center_y, 7),
+        (grid_center_x + radius, grid_center_y + radius, 7),
+        (grid_center_x - radius, grid_center_y + radius, 2),
+        (grid_center_x - radius, grid_center_y - radius, 2),
+        (grid_center_x + radius, grid_center_y - radius, 7),
+        (grid_center_x + radius, grid_center_y, 7)
     ]
         
     camera_path.set_control_points(control_points)
@@ -65,7 +63,7 @@ def homework3():
     
     # Create camera on bezier path
     camera = create_camera("PathCamera")
-    center_point = (grid_center_x, grid_center_y, grid_center_z)
+    center_point = (grid_center_x, grid_center_y, 0)
     follow_path(camera, camera_path, center_point, frames=250)
     bpy.context.scene.camera = camera
 
@@ -87,7 +85,7 @@ def homework3():
             
             # random colour
             mat = bpy.data.materials.new(name=f"Color_{x}_{y}")
-            mat.diffuse_color = create_pastel_color()
+            mat.diffuse_color = create_pastel_color(.65)
             
             cube = bpy.context.active_object
             if cube.data.materials:

@@ -1,11 +1,11 @@
 import bpy
 import math
-from mathutils import Vector
 
 def add_camera(location=(0, 5, 10), rotation=(math.radians(40), 0, math.radians(180))):
     bpy.ops.object.camera_add(location=location, rotation=rotation)
     bpy.context.scene.camera = bpy.context.object 
 
+# for camera return
 def create_camera(name="Camera", location=(0, 0, 10), rotation=(0, 0, 0)):
     """Create a camera and return it"""
     bpy.ops.object.camera_add(location=location, rotation=rotation)
@@ -39,13 +39,14 @@ def follow_path(camera, curve, target_point=(0, 0, 0), frames=250):
     follow.offset = 100
     follow.keyframe_insert(data_path="offset", frame=frames)
     
-    # Make animation cyclic
+    # cyclic animation ?
     if camera.animation_data and camera.animation_data.action:
         for fc in camera.animation_data.action.fcurves:
             fc.modifiers.new(type='CYCLES')
     
     return camera
 
+# set grid mid target
 def create_target(location):
     """Create an empty object as camera target"""
     empty = bpy.data.objects.new("CameraTarget", None)
