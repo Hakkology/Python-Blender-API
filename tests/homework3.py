@@ -9,22 +9,10 @@ from modules.det import add_bevel
 from modules.light import create_directional_light
 from modules.bezier import BezierCurve
 from modules.camera import create_camera, follow_path
+from modules.material import create_pastel_color
 
 grid_size = 20
 spacing = 1.1   
-
-def lerp(start, end, factor):
-    """Lerp function"""
-    return start + factor * (end - start) # basic lerp function
-
-def create_pastel_color(mix_factor):
-    """Mix colour with white"""
-    base_color = [random.random() for _ in range(3)]
-    white = [1, 1, 1]
-    
-    pastel = [lerp(base, 1, mix_factor) for base in base_color]
-    return (*pastel, 1)  
-
 
 def homework3():
     cubes = []
@@ -58,8 +46,6 @@ def homework3():
         
     camera_path.set_control_points(control_points)
     camera_path.spline.use_cyclic_u = True
-
-
     
     # Create camera on bezier path
     camera = create_camera("PathCamera")
