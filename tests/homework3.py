@@ -7,6 +7,11 @@ from modules.sel import sel
 from modules.selection import select
 from modules.det import add_bevel
 from modules.light import create_directional_light
+from modules.bezier import BezierCurve
+from modules.camera import create_camera, follow_path
+
+grid_size = 20
+spacing = 1.1   
 
 def lerp(start, end, factor):
     """Lerp function"""
@@ -26,7 +31,13 @@ def homework3():
     cubes = []
     cube_data = {}
 
-    # lights
+    # Create camera on bezier path
+    grid_width = grid_size * spacing
+    grid_center_x = (grid_width - spacing) / 2
+    grid_center_y = (grid_width - spacing) / 2
+    grid_center_z = 0  # or you can set this to average height if needed
+
+    # lights section
     create_directional_light(
         location=(0, 0, 10),
         rotation=(math.radians(45), math.radians(45), math.radians(270)),
@@ -34,9 +45,33 @@ def homework3():
         color=(1, 1, 1)
     )
 
-    # 20x20 grid of cubes
-    for x in range(20):
-        for y in range(20):
+    # camera section
+    camera_path = BezierCurve("CameraPath")
+    # Define control points
+    radius = 15  
+    control_points = [
+        (grid_center_x + radius, grid_center_y, 6),
+        (grid_center_x + radius, grid_center_y + radius, 6),
+        (grid_center_x - radius, grid_center_y + radius, 4),
+        (grid_center_x - radius, grid_center_y - radius, 4),
+        (grid_center_x + radius, grid_center_y - radius, 6),
+        (grid_center_x + radius, grid_center_y, 6)
+    ]
+        
+    camera_path.set_control_points(control_points)
+    camera_path.spline.use_cyclic_u = True
+
+
+    
+    # Create camera on bezier path
+    camera = create_camera("PathCamera")
+    center_point = (grid_center_x, grid_center_y, grid_center_z)
+    follow_path(camera, camera_path, center_point, frames=250)
+    bpy.context.scene.camera = camera
+
+    # 20x20 grid of cubes section
+    for x in range(grid_size):
+        for y in range(grid_size):
             cube_name = f'AnimatedCube_{x}_{y}'
             create.cube(cube_name)
 
@@ -46,7 +81,7 @@ def homework3():
             # random height
             initial_z = random.uniform(0, 0.5)
             movement_range = random.uniform(0.25, 0.5)
-            sel.translate((x * 1.1, y * 1.1, initial_z))
+            sel.translate((x * spacing, y * spacing, initial_z))
             
             act.scale((2, 2, 2))
             
