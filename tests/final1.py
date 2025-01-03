@@ -5,6 +5,7 @@ from modules.sel import sel
 from modules.material import assignColorMaterial
 from modules.keyframe import get_number_pattern, move_cylinder
 from modules.camera import add_camera
+from modules.light import create_directional_light
 
 grid_size = 10
 spacing = 1
@@ -16,9 +17,19 @@ def final1():
     grid_center_x = (grid_size * spacing) / 2 - spacing/2
     grid_center_y = (grid_size * spacing) / 2 - spacing/2
 
+    camera_distance = 9  # Grid'den uzaklık
+    camera_height = 18    # Yükseklik
+    
     add_camera(
-        location=(grid_center_x, grid_center_y - 10, 10),  
-        rotation=(math.radians(45), 0, math.radians(180))  
+        location=(grid_center_x, grid_center_y - camera_distance, camera_height),  # (4.5, -10.5, 12)
+        rotation=(math.radians(30), 0, 0)  # 45 derece aşağı bakış
+    )
+
+    create_directional_light(
+        location=(grid_center_x, grid_center_y - camera_distance, camera_height),
+        rotation=(math.radians(45), 0, 0),
+        energy=1,  # Işık şiddeti
+        color=(1, 1, 1)  # Beyaz ışık
     )
 
     for x in range(grid_size):
