@@ -7,7 +7,7 @@ This project provides an automated setup for generating, modifying, and renderin
 - **`main.py`**: Main entry script that initiates the Blender scene setup, executes tests, and optionally renders animations.
 - **`modules/`**: Contains all reusable modules such as object creation, transformation, selection management, physics setup, and rendering tools.
 - **`tests/`**: Includes test files (`test0.py`, `test1.py`, etc.) to generate various configurations within Blender for testing purposes.
-- **`homework1.py`**: A custom scene configuration used as the primary setup in this project.
+- **`homework files`**: A custom scene configuration used as the primary setup in this project.
 - **`scene/`**: Stores generated `.blend` files and render outputs.
 
 ## Requirements

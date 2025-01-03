@@ -4,7 +4,7 @@ import random
 import bmesh
 from modules.selection import mode 
 from modules.sel import sel  
-
+from modules.calc import lerp
 def makeMaterial(name, diffuse=(1, 1, 1, 1), metallic=0.0, specular=0.8, roughness=0.2):
     """
     This function defines a new material with a given name.
@@ -146,3 +146,11 @@ def assignMaterialsToSphere(sphere_obj, stripe_count):
     # Update and return to object mode
     bmesh.update_edit_mesh(sphere_obj.data)
     bpy.ops.object.mode_set(mode='OBJECT')
+
+def create_pastel_color(mix_factor):
+    """Mix colour with white"""
+    base_color = [random.random() for _ in range(3)]
+    white = [1, 1, 1]
+    
+    pastel = [lerp(base, 1, mix_factor) for base in base_color]
+    return (*pastel, 1)  

@@ -3,7 +3,7 @@ import subprocess
 import bpy
 import sys
 
-render_mode = False;
+render_mode = True;
 
 # Get the project directory
 project_directory = os.path.dirname(os.path.abspath(__file__))
@@ -36,6 +36,7 @@ from test5 import test5
 from test6 import test6
 from homework1 import homework1
 from homework2 import homework2
+from homework3 import homework3
 from delete import delete_all
 from render import render_to_folder, bake_simulation_cache_to_disk
 
@@ -51,13 +52,14 @@ delete_all()
 # test5()
 # test6()
 # homework1()
-homework2()
+# homework2()
+homework3()
 
 
 # Render if render_mode is True
 if render_mode:
-    bake_simulation_cache_to_disk(frame_start=1, frame_end=120)
-    render_to_folder(render_name='BCO602_HW2', res_x=768, res_y=768, engine='BLENDER_EEVEE', animation=True)
+    bake_simulation_cache_to_disk(frame_start=1, frame_end=250)
+    render_to_folder(render_name='BCO602_HW3', res_x=768, res_y=768, engine='BLENDER_EEVEE', animation=True)
 
 # Ensure the scene is updated
 bpy.context.view_layer.update()
