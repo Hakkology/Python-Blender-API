@@ -154,3 +154,18 @@ def create_pastel_color(mix_factor):
     
     pastel = [lerp(base, 1, mix_factor) for base in base_color]
     return (*pastel, 1)  
+
+def assignColorMaterial(obj, name, color=(0.1, 0.1, 0.1, 1)):
+    """
+    Assigns a single color material to an object
+    """
+    mat = bpy.data.materials.new(name=f"Material_{name}")
+    mat.use_nodes = False  # Node sistemini kapatıyoruz
+    mat.diffuse_color = color  # Direkt renk atıyoruz
+    
+    if obj.data.materials:
+        obj.data.materials[0] = mat
+    else:
+        obj.data.materials.append(mat)
+    
+    return mat

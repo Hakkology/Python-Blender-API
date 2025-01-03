@@ -3,7 +3,7 @@ import subprocess
 import bpy
 import sys
 
-render_mode = True;
+render_mode = False
 
 # Get the project directory
 project_directory = os.path.dirname(os.path.abspath(__file__))
@@ -27,18 +27,19 @@ if blender_scripts_path and blender_scripts_path not in sys.path:
 blend_file_path = os.path.join(project_directory, "scene/.output.blend")
 
 # Import custom modules
-from test0 import test0
-from test1 import test1
-from test2 import test2
-from test3 import test3
-from test4 import test4
-from test5 import test5
-from test6 import test6
-from homework1 import homework1
-from homework2 import homework2
-from homework3 import homework3
-from delete import delete_all
-from render import render_to_folder, bake_simulation_cache_to_disk
+from tests.test0 import test0
+from tests.test1 import test1
+from tests.test2 import test2
+from tests.test3 import test3
+from tests.test4 import test4
+from tests.test5 import test5
+from tests.test6 import test6
+from tests.homework1 import homework1
+from tests.homework2 import homework2
+from tests.homework3 import homework3
+from tests.final1 import final1
+from modules.delete import delete_all
+from modules.render import render_to_folder, bake_simulation_cache_to_disk
 
 # Ensure the directory exists
 os.makedirs(project_directory, exist_ok=True)
@@ -53,7 +54,8 @@ delete_all()
 # test6()
 # homework1()
 # homework2()
-homework3()
+# homework3()
+final1()
 
 
 # Render if render_mode is True

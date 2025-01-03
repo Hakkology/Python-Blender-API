@@ -20,3 +20,16 @@ class create:
         bpy.ops.mesh.primitive_cube_add(size=0.5, location=(0, 0, 0))
         act.subdivide(cuts=cuts, smoothness=smoothness)
         act.rename(objName)
+
+    def cylinder(objName, radius=0.5, depth=1):
+        bpy.ops.mesh.primitive_cylinder_add(
+            radius=radius,
+            depth=depth,
+            location=(0, 0, 0)
+        )
+        act.rename(objName)
+    
+    def plane(objName, size=10):
+        bpy.ops.mesh.primitive_plane_add(size=size, location=(0, 0, 0))
+        act.rename(objName)
+        return bpy.context.active_object
