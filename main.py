@@ -3,7 +3,7 @@ import subprocess
 import bpy
 import sys
 
-render_mode = True
+render_mode = False
 
 # Get the project directory
 project_directory = os.path.dirname(os.path.abspath(__file__))
@@ -12,7 +12,8 @@ project_directory = os.path.dirname(os.path.abspath(__file__))
 directories_to_add = [
     project_directory,
     os.path.join(project_directory, 'modules'),
-    os.path.join(project_directory, 'tests')
+    os.path.join(project_directory, 'tests'),
+    os.path.join(project_directory, 'visuals')
 ]
 
 # Add each directory to the Python path if not already added
@@ -56,13 +57,13 @@ delete_all()
 # homework1()
 # homework2()
 # homework3()
-final1()
-# final2()
+# final1()
+final2()
 
 # Render if render_mode is True
 if render_mode:
     bake_simulation_cache_to_disk(frame_start=1, frame_end=250)
-    render_to_folder(render_name='BCO602_Final1', res_x=768, res_y=768, engine='BLENDER_EEVEE', animation=True)
+    render_to_folder(render_name='BCO602_Final2', res_x=768, res_y=768, engine='BLENDER_EEVEE', animation=True)
 
 # Ensure the scene is updated
 bpy.context.view_layer.update()

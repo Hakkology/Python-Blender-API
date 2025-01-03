@@ -1,4 +1,5 @@
 import bpy
+import os
 from act import act  # act sınıfını kullanmak için import ediyoruz
 
 class create:
@@ -33,3 +34,32 @@ class create:
         bpy.ops.mesh.primitive_plane_add(size=size, location=(0, 0, 0))
         act.rename(objName)
         return bpy.context.active_object
+    
+    def mesh_plane(objName, texture_path=None):
+        """Creates a mesh plane with optional texture"""
+        bpy.ops.mesh.primitive_plane_add(size=2)
+        plane = bpy.context.active_object
+        act.rename(objName)
+
+        if texture_path and os.path.exists(texture_path):
+            # Create new material
+            mat = bpy.data.materials.new(name=f"Material_{objName}")
+            mat.use_nodes = False  # Node sistemini kapatıyoruz
+            
+            # Load image as texture
+            tex = bpy.data.textures.new(name=f"Texture_{objName}", type='IMAGE')
+            tex.image = bpy.data.images.load(texture_path)
+            
+            # Add texture slot
+            mtex = mat.texture_slots.add()
+            mtex.texture = tex
+            mtex.texture_coords = 'UV'
+            mtex.use_map_color_diffuse = True
+            
+            # Assign material
+            if plane.data.materials:
+                plane.data.materials[0] = mat
+            else:
+                plane.data.materials.append(mat)
+
+        return plane

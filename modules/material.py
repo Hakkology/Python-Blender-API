@@ -155,14 +155,37 @@ def create_pastel_color(mix_factor):
     pastel = [lerp(base, 1, mix_factor) for base in base_color]
     return (*pastel, 1)  
 
-def assignColorMaterial(obj, name, color=(0.1, 0.1, 0.1, 1)):
+def assignColorMaterial(obj, name, color=(0.1, 0.1, 0.1, 1), metallic=0.0, roughness=0.5, alpha=1.0):
     """
-    Assigns a single color material to an object
+    Assigns a single color material to an object with additional properties
+    Args:
+        obj: Blender object
+        name: Material name
+        color: RGBA color tuple
+        metallic: Metallic factor (0.0 - 1.0)
+        roughness: Roughness factor (0.0 - 1.0)
+        alpha: Transparency (0.0 - 1.0)
     """
     mat = bpy.data.materials.new(name=f"Material_{name}")
-    mat.use_nodes = False  # Node sistemini kapatıyoruz
-    mat.diffuse_color = color  # Direkt renk atıyoruz
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    nodes.clear()
     
+    # Create principled BSDF node
+    principled = nodes.new('ShaderNodeBsdfPrincipled')
+    principled.inputs['Base Color'].default_value = color
+    principled.inputs['Metallic'].default_value = metallic
+    principled.inputs['Roughness'].default_value = roughness
+    principled.inputs['Alpha'].default_value = alpha
+    
+    # Create output node
+    output = nodes.new('ShaderNodeOutputMaterial')
+    
+    # Link nodes
+    links = mat.node_tree.links
+    links.new(principled.outputs['BSDF'], output.inputs['Surface'])
+    
+    # Assign material to object
     if obj.data.materials:
         obj.data.materials[0] = mat
     else:
