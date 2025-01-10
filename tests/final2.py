@@ -21,28 +21,30 @@ def final2():
         rotation=(math.radians(45), 0, 0),
         energy=1, 
         color=(1, 1, 1)
-)
+    )
     
     # Setup physics world
-    setup_rigidbody_world()
+    setup_rigidbody_world(gravity=(0, 0, -2))
     
     # Create background plane with snowy fog texture
     background = create.mesh_plane(
         'SnowyBackground',
-        texture_path=os.path.join(project_dir, 'visuals', 'snowyFog.jpg')
+        texture_path=os.path.join(project_dir, 'visuals', 'snowyFog.png')
     )
+    
     
     # Scale and position the background plane
     select(background.name)
-    sel.scale((10, 10, 1))
-    sel.translate((0, 0, -1))
+    sel.scale((48, 27, 1))
+    sel.rotate_x(math.radians(90)) 
+    sel.translate((0, 10, 10))
     act.apply_scale()
     
     # Import and setup snowflakes
     snowflake_path = os.path.join(project_dir, 'visuals', 'snowFlakeXobj.obj')
     snowflakes = []
     
-    for i in range(50):
+    for i in range(200):
         snowflake = import_obj(snowflake_path, f'Snowflake_{i}')
         select(snowflake.name)
         
@@ -50,7 +52,7 @@ def final2():
         sel.translate((
             random.uniform(-5, 5),
             random.uniform(-5, 5),
-            random.uniform(5, 10)
+            random.uniform(8, 18)
         ))
         
         # Random rotation - using act instead of sel

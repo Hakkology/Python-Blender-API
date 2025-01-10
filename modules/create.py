@@ -44,17 +44,24 @@ class create:
         if texture_path and os.path.exists(texture_path):
             # Create new material
             mat = bpy.data.materials.new(name=f"Material_{objName}")
-            mat.use_nodes = False  # Node sistemini kapatıyoruz
+            mat.use_nodes = True
+            nodes = mat.node_tree.nodes
+            links = mat.node_tree.links
             
-            # Load image as texture
-            tex = bpy.data.textures.new(name=f"Texture_{objName}", type='IMAGE')
-            tex.image = bpy.data.images.load(texture_path)
+            # Clear default nodes
+            nodes.clear()
             
-            # Add texture slot
-            mtex = mat.texture_slots.add()
-            mtex.texture = tex
-            mtex.texture_coords = 'UV'
-            mtex.use_map_color_diffuse = True
+            # Create nodes
+            principled_bsdf = nodes.new('ShaderNodeBsdfPrincipled')
+            output = nodes.new('ShaderNodeOutputMaterial')
+            tex_image = nodes.new('ShaderNodeTexImage')
+            
+            # Load image
+            tex_image.image = bpy.data.images.load(texture_path)
+            
+            # Link nodes
+            links.new(tex_image.outputs['Color'], principled_bsdf.inputs['Base Color'])
+            links.new(principled_bsdf.outputs['BSDF'], output.inputs['Surface'])
             
             # Assign material
             if plane.data.materials:

@@ -4,7 +4,7 @@ import bmesh
 from selection import select, mode, selection_mode
 from sel import sel
 
-def setup_rigidbody_world():
+def setup_rigidbody_world(gravity=(0, 0, -9.81)):
     """
     Sets up a rigid body world with gravity and adds a partial spherical ground plane.
     """
@@ -12,7 +12,7 @@ def setup_rigidbody_world():
     if not bpy.context.scene.rigidbody_world:
         bpy.ops.rigidbody.world_add()
 
-    bpy.context.scene.gravity = (0, 0, -9.81)  
+    bpy.context.scene.gravity = gravity  
 
 def create_partial_spherical_ground():
     bpy.ops.mesh.primitive_uv_sphere_add(radius=6, location=(0, 0, 0))
