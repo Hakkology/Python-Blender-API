@@ -10,6 +10,7 @@ from modules.selection import select
 from modules.act import act
 from modules.sel import sel
 from modules.light import create_point_light, create_directional_light
+from modules.effects import add_wind, add_turbulence, animate_force_field
 
 def final2():
     project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,6 +40,21 @@ def final2():
     sel.rotate_x(math.radians(90)) 
     sel.translate((0, 10, 10))
     act.apply_scale()
+
+    wind = add_wind(
+        location=(0, -5, 10),
+        strength=2.0,
+        noise=0.5
+    )
+    animate_force_field(wind, frames=250)
+    
+    turbulence = add_turbulence(
+        location=(0, 0, 15),
+        strength=1.0,
+        size=2.0,
+        noise=0.3
+    )
+    animate_force_field(turbulence, frames=250)
     
     # Import and setup snowflakes
     snowflake_path = os.path.join(project_dir, 'visuals', 'snowFlakeXobj.obj')
