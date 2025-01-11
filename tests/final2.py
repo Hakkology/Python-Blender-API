@@ -13,28 +13,22 @@ from modules.sel import sel
 from modules.light import create_point_light, create_directional_light
 from modules.effects import add_wind, add_turbulence, animate_force_field
 from modules.text import create_3d_text
-from modules.camera import create_camera
+from modules.camera import add_camera_for_mesh
 
 def final2():
     project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     # Setup physics world
-    setup_rigidbody_world(gravity=(0, 0, -2))
+    setup_rigidbody_world(gravity=(0, 0, -3))
 
     # Add lights for better visibility
-    create_point_light(location=(0, 0, 10), energy=1000, color=(1, 1, 1))
+    create_point_light(location=(0, 0, 10), energy=1, color=(1, 1, 1))
     create_directional_light(
         location=(0, 0, 10), 
         rotation=(math.radians(45), 0, 0),
         energy=1, 
         color=(1, 1, 1)
     )
-
-    camera = create_camera(
-        location=(0, -15, 10),  # Plane'in merkezinden biraz geride ve yukarıda
-        rotation=(math.radians(45), 0, 0)  # 45 derece aşağı bakış
-    )
-    bpy.context.scene.camera = camera
     
     # Create background plane with snowy fog texture
     background = create.mesh_plane(
@@ -49,6 +43,10 @@ def final2():
     sel.translate((0, 10, 10))
     act.apply_scale()
 
+    # Kamera ayarları
+    camera = add_camera_for_mesh(background, distance=60, height=15, perspective=True)
+    bpy.context.scene.camera = camera
+
     # Add 3D text
     text = create_3d_text(
         "2025",
@@ -59,20 +57,21 @@ def final2():
     
     select(text.name)
     sel.rotate_x(math.radians(90))
-    animate_falling_text(text, start_frame=1, end_frame=250, start_z=15, end_z=5)
+    animate_falling_text(text, start_frame=1, end_frame=250, start_z=15, end_z=0)
+
 
     wind = add_wind(
-        location=(0, 1, 13),
-        strength= 0.005,  # Arttırıldı
-        noise= 0.2      # Arttırıldı
+        location=(0, 0, 10),      # Merkezi konuma al
+        strength=1.0,             # Daha güçlü
+        noise=0.8                 # Daha fazla rastgelelik
     )
     animate_force_field(wind, frames=250)
     
     turbulence = add_turbulence(
-        location= (0, 1, 8),
-        strength= 0.005,   # Arttırıldı
-        size= 2.0,      # Arttırıldı
-        noise= 0.2       # Arttırıldı
+        location=(0, 0, 8),       # Merkezi konuma al
+        strength=0.8,             # Daha güçlü
+        size=3.0,                 # Daha geniş etki alanı
+        noise=0.8                 # Daha fazla rastgelelik
     )
     animate_force_field(turbulence, frames=250)
     
@@ -80,22 +79,22 @@ def final2():
     snowflake_path = os.path.join(project_dir, 'visuals', 'snowFlakeXobj.obj')
     snowflakes = []
     
-    for i in range(200):
+    for i in range(80):
         snowflake = import_obj(snowflake_path, f'Snowflake_{i}')
         select(snowflake.name)
         
         # Random position
         sel.translate((
-            random.uniform(-5, 5),
-            random.uniform(0, 2),
-            random.uniform(8, 18)
+            random.uniform(-2, 2),    # Daha dar x aralığı
+            random.uniform(-1, 1),    # Daha dar y aralığı
+            random.uniform(5, 8)      # Daha alçak z aralığı
         ))
         
         # Random rotation - using act instead of sel
         act.rotation((
-            random.uniform(0, 3.14159),
-            random.uniform(0, 3.14159),
-            random.uniform(0, 3.14159)
+            random.uniform(0, math.pi),
+            random.uniform(0, math.pi),
+            random.uniform(0, math.pi)
         ))
         
         # Scale
@@ -103,7 +102,7 @@ def final2():
         act.apply_scale()
         
         # Add rigid body physics
-        add_rigidbody_with_effects(snowflake, body_type='ACTIVE', mass=1)
+        add_rigidbody_with_effects(snowflake, body_type='ACTIVE', mass= .1)
         
         # Add white material
         assignColorMaterial(

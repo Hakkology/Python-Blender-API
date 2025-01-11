@@ -66,9 +66,6 @@ def add_rigidbody(obj, body_type='ACTIVE'):
     obj.rigid_body.restitution = 0.9  # Bounciness ayarı
 
 def add_rigidbody_with_effects(obj, body_type='ACTIVE', mass=0.05):
-    """
-    Adds a rigidbody to the object with enhanced wind and turbulence sensitivity
-    """
     bpy.context.view_layer.objects.active = obj
     bpy.ops.rigidbody.object_add()
     
@@ -76,13 +73,13 @@ def add_rigidbody_with_effects(obj, body_type='ACTIVE', mass=0.05):
     rb.type = body_type
     rb.mass = mass
     rb.restitution = 0.1      
-    rb.friction = 0.5         # Azaltıldı
-    rb.linear_damping = 0.3   # Önemli ölçüde azaltıldı
-    rb.angular_damping = 0.3  # Önemli ölçüde azaltıldı
+    rb.friction = 0.0         # Daha fazla sürtünme
+    rb.linear_damping = 0.1   # Daha fazla lineer damping
+    rb.angular_damping = 0.1  # Daha fazla açısal damping
     
-    rb.collision_shape = 'SPHERE'
+    rb.collision_shape = 'CONVEX_HULL'  # Daha dengeli bir seçenek
     rb.use_margin = True
-    rb.collision_margin = 0.1
+    rb.collision_margin = .75
 
 def add_softbody_modifier(obj):
     bpy.context.view_layer.objects.active = obj

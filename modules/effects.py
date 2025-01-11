@@ -13,11 +13,9 @@ def add_wind(location=(0, 0, 0), strength=1.0, noise=0.0, seed=1):
     
     # Falloff ayarları
     field.falloff_type = 'SPHERE'
-    field.falloff_power = 0.1  # Çok yavaş güç azalması
-    field.use_max_distance = True
-    field.use_min_distance = True
-    field.distance_min = 0.0
-    field.distance_max = 50.0  # Çok daha geniş etki alanı
+    field.z_direction = 'BOTH'
+    field.flow = 1.0
+    field.use_max_distance = False  # Mesafe sınırını kaldırıyoruz
     
     return wind
 
@@ -32,37 +30,33 @@ def add_turbulence(location=(0, 0, 0), strength=5.0, size=1.0, noise=0.0):
     field.use_absorption = False
     
     # Falloff ayarları
-    field.falloff_type = 'SPHERE'
-    field.falloff_power = 0.1  # Çok yavaş güç azalması
-    field.use_max_distance = True
-    field.use_min_distance = True
-    field.distance_min = 0.0
-    field.distance_max = 50.0  # Çok daha geniş etki alanı
+    field.falloff_type = 'SPHERE'  # TUBE yerine SPHERE kullanalım
+    field.z_direction = 'BOTH'     # Her iki yönde de etki
+    field.flow = 1.0               # Akış gücü
+    field.use_max_distance = False
     
     return turbulence
 
 def animate_force_field(field, frames=250):
-    """
-    Animates a force field's strength continuously
-    """
     initial_strength = field.field.strength
     
-    # Her frame için sürekli animasyon
+    # Kademeli başlangıç için
+    ramp_frames = 50  # İlk 50 frame'de kademeli artış
+    
     for frame in range(frames):
-        # Sürekli dalgalanma için birden fazla sinüs dalgasını birleştir
-        wave1 = 0.1 * math.sin(2 * math.pi * frame / 60)  # Yavaş dalga
-        wave2 = 0.05 * math.sin(2 * math.pi * frame / 30)  # Hızlı dalga
+        # Başlangıç rampası
+        ramp_factor = min(frame / ramp_frames, 1.0)
+        
+        # Normal dalgalanma
+        wave1 = 0.1 * math.sin(2 * math.pi * frame / 60)
+        wave2 = 0.05 * math.sin(2 * math.pi * frame / 30)
         variation = wave1 + wave2
         
-        new_strength = initial_strength * (0.9 + variation)
+        # Gücü hesapla (ramp faktörü ile çarparak)
+        new_strength = initial_strength * (1.0 + variation)  # Keep strength constant after ramp-up
         
-        # Keyframe ekle
         field.field.strength = new_strength
         field.field.keyframe_insert(data_path="strength", frame=frame)
-    
-    # Son frame'den sonra da devam etmesi için son değeri tekrarla
-    field.field.strength = initial_strength
-    field.field.keyframe_insert(data_path="strength", frame=frames)
     
     # Döngüsel animasyon için
     if field.animation_data and field.animation_data.action:

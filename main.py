@@ -3,7 +3,7 @@ import subprocess
 import bpy
 import sys
 
-render_mode = False
+render_mode = True
 
 # Get the project directory
 project_directory = os.path.dirname(os.path.abspath(__file__))

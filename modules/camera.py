@@ -5,6 +5,37 @@ def add_camera(location=(0, 5, 10), rotation=(math.radians(40), 0, math.radians(
     bpy.ops.object.camera_add(location=location, rotation=rotation)
     bpy.context.scene.camera = bpy.context.object 
 
+def add_camera_for_mesh(mesh, distance=100, height=10, perspective=True):
+    """
+    Adds a camera that exactly frames the mesh, nothing more.
+    """
+    # Get mesh dimensions and location
+    mesh_dimensions = mesh.dimensions
+    mesh_location = mesh.location
+    
+    # Calculate the camera position
+    camera = create_camera(
+        location=(mesh_location.x, mesh_location.y - distance, mesh_location.z + height),
+        rotation=(math.radians(90), 0, 0)
+    )
+    
+    if perspective:
+        camera.data.type = 'PERSP'
+        
+        # Calculate FOV to exactly match mesh height
+        mesh_height = mesh_dimensions.y  # Y dimension after 90 degree rotation
+        fov = 2 * math.atan((mesh_height / 2) / distance)
+        
+        # Set camera properties
+        camera.data.lens_unit = 'FOV'
+        camera.data.angle = fov
+        
+        # Lock camera to view only the mesh
+        camera.data.sensor_fit = 'VERTICAL'
+        camera.data.sensor_height = mesh_height
+    
+    return camera
+
 # for camera return
 def create_camera(name="Camera", location=(0, 0, 10), rotation=(0, 0, 0)):
     """Create a camera and return it"""
