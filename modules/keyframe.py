@@ -143,3 +143,22 @@ def move_cylinder(cylinder, is_raised, start_frame, end_frame, low_pos=0.5, high
                 keyframe.interpolation = 'BEZIER'
                 keyframe.handle_left_type = 'AUTO_CLAMPED'
                 keyframe.handle_right_type = 'AUTO_CLAMPED'
+
+def animate_falling_text(text_obj, start_frame=1, end_frame=250, start_z=15, end_z=5):
+    """
+    Animates text falling with gravity-like motion
+    """
+    # Starting position keyframe
+    text_obj.location.z = start_z
+    text_obj.keyframe_insert(data_path="location", frame=start_frame)
+    
+    # Final position keyframe
+    text_obj.location.z = end_z
+    text_obj.keyframe_insert(data_path="location", frame=end_frame)
+    
+    # Add smooth easing
+    if text_obj.animation_data and text_obj.animation_data.action:
+        for fcurve in text_obj.animation_data.action.fcurves:
+            for keyframe in fcurve.keyframe_points:
+                keyframe.interpolation = 'SINE'
+                keyframe.easing = 'EASE_OUT'
