@@ -13,7 +13,7 @@ from modules.sel import sel
 from modules.light import create_point_light, create_directional_light
 from modules.effects import add_wind, add_turbulence, animate_force_field
 from modules.text import create_3d_text
-from modules.camera import add_camera_for_mesh
+from modules.camera import create_camera
 
 def final2():
     project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -43,10 +43,17 @@ def final2():
     sel.translate((0, 10, 10))
     act.apply_scale()
 
-    # Kamera ayarları
-    camera = add_camera_for_mesh(background, distance=60, height=15, perspective=True)
-    bpy.context.scene.camera = camera
+   # Basit kamera ayarı
+    camera = create_camera(
+        location=(0, -50, 10),  # Mesh'in önünde ve ortasında
+        rotation=(math.radians(90), 0, 0)  # Düz bakış
+    )
 
+    # Kamera ayarları
+    camera.data.type = 'ORTHO'  # Perspektif yerine orthographic kullan
+    camera.data.ortho_scale = 48  # Mesh'in genişliği kadar görüş alanı
+
+    bpy.context.scene.camera = camera
     # Add 3D text
     text = create_3d_text(
         "2025",
@@ -62,15 +69,15 @@ def final2():
 
     wind = add_wind(
         location=(0, 0, 10),      # Merkezi konuma al
-        strength=1.0,             # Daha güçlü
+        strength=.4,             # Daha güçlü
         noise=0.8                 # Daha fazla rastgelelik
     )
     animate_force_field(wind, frames=250)
     
     turbulence = add_turbulence(
         location=(0, 0, 8),       # Merkezi konuma al
-        strength=0.8,             # Daha güçlü
-        size=3.0,                 # Daha geniş etki alanı
+        strength=0.4,             # Daha güçlü
+        size=5.0,                 # Daha geniş etki alanı
         noise=0.8                 # Daha fazla rastgelelik
     )
     animate_force_field(turbulence, frames=250)
@@ -79,7 +86,7 @@ def final2():
     snowflake_path = os.path.join(project_dir, 'visuals', 'snowFlakeXobj.obj')
     snowflakes = []
     
-    for i in range(80):
+    for i in range(120):
         snowflake = import_obj(snowflake_path, f'Snowflake_{i}')
         select(snowflake.name)
         
@@ -87,7 +94,7 @@ def final2():
         sel.translate((
             random.uniform(-2, 2),    # Daha dar x aralığı
             random.uniform(-1, 1),    # Daha dar y aralığı
-            random.uniform(5, 8)      # Daha alçak z aralığı
+            random.uniform(4, 9)      # Daha alçak z aralığı
         ))
         
         # Random rotation - using act instead of sel

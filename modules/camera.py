@@ -10,29 +10,25 @@ def add_camera_for_mesh(mesh, distance=100, height=10, perspective=True):
     Adds a camera that exactly frames the mesh, nothing more.
     """
     # Get mesh dimensions and location
-    mesh_dimensions = mesh.dimensions
-    mesh_location = mesh.location
+    dims = mesh.dimensions
+    loc = mesh.location
     
-    # Calculate the camera position
+    # Calculate required FOV based on mesh size and distance
+    required_fov = 2 * math.degrees(math.atan2(dims.y/2, distance))
+    
+    # Create and position camera
     camera = create_camera(
-        location=(mesh_location.x, mesh_location.y - distance, mesh_location.z + height),
+        location=(loc.x, loc.y - distance, loc.z + height),
         rotation=(math.radians(90), 0, 0)
     )
     
-    if perspective:
-        camera.data.type = 'PERSP'
-        
-        # Calculate FOV to exactly match mesh height
-        mesh_height = mesh_dimensions.y  # Y dimension after 90 degree rotation
-        fov = 2 * math.atan((mesh_height / 2) / distance)
-        
-        # Set camera properties
-        camera.data.lens_unit = 'FOV'
-        camera.data.angle = fov
-        
-        # Lock camera to view only the mesh
-        camera.data.sensor_fit = 'VERTICAL'
-        camera.data.sensor_height = mesh_height
+    # Set camera properties
+    camera.data.type = 'PERSP'
+    camera.data.lens_unit = 'FOV'
+    camera.data.angle = math.radians(required_fov)
+    
+    # Force camera to use vertical fit
+    camera.data.sensor_fit = 'VERTICAL'
     
     return camera
 
